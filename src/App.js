@@ -1,25 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
+import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
+import 'devextreme/dist/css/dx.common.css';
+import 'devextreme/dist/css/dx.light.css';
 import './App.css';
+import Nav from './components/Nav/Nav';
+import {Home} from './pages/Home';
+import {About} from './pages/About';
 
-function App() {
+const App = () => {
+  const title = "DevExtreme Components Test App!!";
+  const links = [
+      {link: "/", name: "Главная", exact: true,},
+      {link: "/about", name: "About", exact: true,},
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter basename="/">
+      <div className="App">
+        <div className="container">
+          <Nav title={title} links={links} />
+        </div>
+        <div className="container App pt-4">
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/about" component={About} />
+            <Redirect to="/" />
+          </Switch>
+        </div>
+      </div>
+    </BrowserRouter> 
   );
 }
 
