@@ -4,14 +4,35 @@ import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 import './App.css';
 import Nav from './components/Nav/Nav';
-import {Home} from './pages/Home';
-import {About} from './pages/About';
+import Home from './pages/Home';
+import Grid1 from './pages/Grid1';
+import About from './pages/About';
 
 const App = () => {
   const title = "DevExtreme Components Test App!!";
   const links = [
       {link: "/", name: "Главная", exact: true,},
+      {link: "/grid1", name: "Grid1", exact: true,},
       {link: "/about", name: "About", exact: true,},
+  ];
+  const columns = [
+    { name: "name", title: "Name" },
+    { name: "sex", title: "Sex" },
+    { name: "city", title: "City" },
+    { name: "car", title: "Car" }
+  ];
+  const rows = [
+    { sex: "Female", name: "Sandra", city: "Las Vegas", car: "Audi A4" },
+    { sex: "Male", name: "Paul", city: "Paris", car: "Nissan Altima" },
+    { sex: "Male", name: "Mark", city: "Paris", car: "Honda Accord" },
+    { sex: "Male", name: "Paul", city: "Paris", car: "Nissan Altima" },
+    { sex: "Female", name: "Linda", city: "Austin", car: "Toyota Corolla" },
+    { sex: "Male", name: "Robert", city: "Las Vegas", car: "Chevrolet Cruze" },
+    { sex: "Female", name: "Lisa", city: "London", car: "BMW 750" },
+    { sex: "Male", name: "Mark", city: "Chicago", car: "Toyota Corolla" },
+    { sex: "Male", name: "Thomas", city: "Rio de Janeiro", car: "Honda Accord" },
+    { sex: "Male", name: "Robert", city: "Las Vegas", car: "Honda Civic" },
+    { sex: "Female", name: "Betty", city: "Paris", car: "Honda Civic" },
   ];
 
   return (
@@ -23,6 +44,7 @@ const App = () => {
         <div className="container App pt-4">
           <Switch>
             <Route path="/" exact component={Home} />
+            <Route path="/grid1" component={() => (<Grid1 columns={columns} rows={rows} />)} />
             <Route path="/about" component={About} />
             <Redirect to="/" />
           </Switch>
