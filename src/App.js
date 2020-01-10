@@ -4,11 +4,16 @@ import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 import './App.css';
 import Nav from './components/Nav/Nav';
+import Alert from './components/Alert/Alert';
 import Home from './pages/Home';
 import Grid1 from './pages/Grid1';
 import About from './pages/About';
+import Button from 'devextreme-react/button';
 
-const App = () => {
+const App = ({alert, showAlert, hideAlert}) => {
+  //console.log(alert);
+  //console.log(showAlert);
+  //console.log(hideAlert);
   const title = "DevExtreme Components Test App!!";
   const links = [
       {link: "/", name: "Главная", exact: true,},
@@ -40,6 +45,15 @@ const App = () => {
       <div className="App">
         <div className="container">
           <Nav title={title} links={links} />
+        </div>
+        <div className="container mt-3">
+          { alert.display
+            ? <Alert alert={alert} hideAlert={hideAlert} />
+            : <Button
+                text="Кнопка, поднимающая Alert!"
+                onClick={() => showAlert('Вот же он, Alert!', 'success')}
+              />
+          }
         </div>
         <div className="container App pt-4">
           <Switch>

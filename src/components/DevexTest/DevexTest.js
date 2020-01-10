@@ -2,8 +2,6 @@ import React from 'react';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 
-import Button from 'devextreme-react/button';
-
 import Chart, {ArgumentAxis, Series, Legend, Tooltip} from 'devextreme-react/chart';
 
 const data = [
@@ -13,18 +11,10 @@ const data = [
 ];
 
 const DevexTest = () => {
-  const sayHelloWorld = () => {
-    console.log('Hello world!')
-  }
+  //console.log('Hello world!');
 
   return (
 	<>
-		<h2>Кнопка</h2>
-		<Button
-			text="Click me"
-			onClick={sayHelloWorld}
-		/>
-
 		<h2 className="mt-3">График</h2>
 		<div className="chart1">
 			<Chart dataSource={data}>
