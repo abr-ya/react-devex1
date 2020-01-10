@@ -5,11 +5,14 @@ import {
     IntegratedSorting,
     PagingState,
     IntegratedPaging,
+    FilteringState,
+    IntegratedFiltering,
 } from '@devexpress/dx-react-grid';
 import {
     Grid,
     Table,
     TableHeaderRow,
+    TableFilterRow,
     PagingPanel,
     TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
@@ -17,6 +20,7 @@ import {
 const Grid1 = (props) => {
     const {rows, columns} = props;
     const [sorting, setSorting] = useState([{ columnName: 'name', direction: 'asc' }]);
+    const [filters, setFilters] = useState([]); // здесь можно предустановить фильтр
     const baseUrl = "https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/";
 
     const [defaultColumnWidths] = useState([
@@ -41,9 +45,19 @@ const Grid1 = (props) => {
                         Column Resizing
                     </a>
                 </li>
+                <li>
+                    <a href={`${baseUrl}filtering/`} target="_blank" rel="noopener noreferrer">
+                        Filtering
+                    </a>
+                </li>
             </ul>
 
             <Grid rows={rows} columns={columns}>
+                <FilteringState
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                />
+                <IntegratedFiltering />
                 <SortingState
                     sorting={sorting}
                     onSortingChange={setSorting}
@@ -58,6 +72,7 @@ const Grid1 = (props) => {
                 <Table />
                 <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
                 <TableHeaderRow showSortingControls />
+                <TableFilterRow />
             </Grid>
         </Paper>
     );
