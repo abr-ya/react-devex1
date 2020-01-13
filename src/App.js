@@ -7,6 +7,7 @@ import Nav from './components/Nav/Nav';
 import Alert from './components/Alert/Alert';
 import Home from './pages/Home';
 import Grid1 from './pages/Grid1';
+import Form from './pages/Form';
 import About from './pages/About';
 import Button from 'devextreme-react/button';
 
@@ -18,6 +19,7 @@ const App = ({alert, showAlert, hideAlert}) => {
   const links = [
       {link: "/", name: "Главная", exact: true,},
       {link: "/grid1", name: "Grid1", exact: true,},
+      {link: "/form", name: "Form", exact: true,},
       {link: "/about", name: "About", exact: true,},
   ];
   const columns = [
@@ -59,6 +61,7 @@ const App = ({alert, showAlert, hideAlert}) => {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/grid1" component={() => (<Grid1 columns={columns} rows={rows} />)} />
+            <Route path="/form" component={Form} />
             <Route path="/about" component={About} />
             <Redirect to="/" />
           </Switch>

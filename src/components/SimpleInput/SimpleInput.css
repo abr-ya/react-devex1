@@ -1,0 +1,7 @@
+.simple-input {
+    max-width: 400px;
+}
+
+.simple-input input {
+    border-radius: 5px 0 0 5px;
+}
