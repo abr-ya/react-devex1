@@ -1,5 +1,6 @@
 import React from 'react';
 import DevexTest from '../components/DevexTest/DevexTest';
+import NestedList from '../components/NestedList/NestedList';
 
 const Home = (props) => {
     //console.log(props.github);
@@ -8,6 +9,7 @@ const Home = (props) => {
         <div>
             <h1>Главная страница</h1>
             <DevexTest />
+            <NestedList />
         </div>
     )
 }
