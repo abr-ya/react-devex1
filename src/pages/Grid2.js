@@ -1,62 +1,140 @@
-import React, { useState } from 'react';
-import Paper from "@material-ui/core/Paper";
+import React, { useState, useReducer, useEffect } from 'react';
+import Paper from '@material-ui/core/Paper';
 import {
-    SortingState,
-    IntegratedSorting,
-    PagingState,
-    IntegratedPaging,
-    FilteringState,
-    IntegratedFiltering,
+	VirtualTableState,
 } from '@devexpress/dx-react-grid';
 import {
-    Grid,
-    Table,
-    TableHeaderRow,
-    TableFilterRow,
-    PagingPanel,
-    TableColumnResizing,
-} from "@devexpress/dx-react-grid-material-ui";
+	Grid,
+	VirtualTable,
+	TableHeaderRow,
+} from '@devexpress/dx-react-grid-material-ui';
 
-const Grid2 = (props) => {
-    const {rows, columns} = props;
-    const [sorting, setSorting] = useState([{ columnName: 'name', direction: 'asc' }]);
-    const [filters, setFilters] = useState([]); // здесь можно предустановить фильтр
+const VIRTUAL_PAGE_SIZE = 100;
+const MAX_ROWS = 50000;
+const URL = 'https://js.devexpress.com/Demos/WidgetsGalleryDataService/api/Sales';
+const getRowId = row => row.Id;
+const buildQueryString = (skip, take) => `${URL}?skip=${skip}&take=${take}`;
 
-    const [defaultColumnWidths] = useState([
-        { columnName: 'name', width: 250 },
-        { columnName: 'sex', width: 150 },
-        { columnName: 'city', width: 250 },
-        { columnName: 'car', width: 250 },
-    ]);
-  
-    return (
-        <Paper>
-            <h1>Grid2</h1>
+const initialState = {
+	rows: [],
+	skip: 0,
+	requestedSkip: 0,
+	take: VIRTUAL_PAGE_SIZE * 2,
+	totalCount: 0,
+	loading: false,
+	lastQuery: '',
+};
 
-            <Grid rows={rows} columns={columns}>
-                <FilteringState
-                    filters={filters}
-                    onFiltersChange={setFilters}
-                />
-                <IntegratedFiltering />
-                <SortingState
-                    sorting={sorting}
-                    onSortingChange={setSorting}
-                />
-                <PagingState
-                    defaultCurrentPage={0}
-                    pageSize={4}
-                />
-                <IntegratedSorting />
-                <IntegratedPaging />
-                <PagingPanel />
-                <Table />
-                <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-                <TableHeaderRow showSortingControls />
-                <TableFilterRow />
-            </Grid>
-        </Paper>
-    );
+function reducer(state, { type, payload }) {
+	switch (type) {
+		case 'UPDATE_ROWS':
+			return {
+				...state,
+				...payload,
+				loading: false,
+			};
+		case 'START_LOADING':
+			return {
+				...state,
+				requestedSkip: payload.requestedSkip,
+				take: payload.take,
+			};
+		case 'REQUEST_ERROR':
+			return {
+				...state,
+				loading: false,
+			};
+		case 'FETCH_INIT':
+			return {
+				...state,
+				loading: true,
+			};
+		case 'UPDATE_QUERY':
+			return {
+				...state,
+				lastQuery: payload,
+			};
+		default:
+			return state;
+	}
 }
 
-export default Grid2;
+export default () => {
+	const [state, dispatch] = useReducer(reducer, initialState);
+	const [columns] = useState([
+		{ name: 'Id', title: 'Id', getCellValue: row => row.Id },
+		{ name: 'ProductCategoryName', title: 'Category', getCellValue: row => row.ProductCategoryName },
+		{ name: 'StoreName', title: 'Store', getCellValue: row => row.StoreName },
+		{ name: 'ProductName', title: 'Product', getCellValue: row => row.ProductName },
+		{ name: 'SalesAmount', title: 'Amount', getCellValue: row => row.SalesAmount },
+	]);
+	const [tableColumnExtensions] = useState([
+		{ columnName: 'Id', width: 80 },
+		{ columnName: 'ProductCategoryName', width: 220 },
+		{ columnName: 'StoreName', width: 220 },
+		{ columnName: 'SalesAmount', width: 120 },
+	]);
+
+	const getRemoteRows = (requestedSkip, take) => {
+		dispatch({ type: 'START_LOADING', payload: { requestedSkip, take } });
+	};
+
+	const loadData = () => {
+		const {
+			requestedSkip, take, lastQuery, loading,
+        } = state;
+        console.log(requestedSkip, take, lastQuery);
+		const query = buildQueryString(requestedSkip, take);
+		if (query !== lastQuery && !loading) {
+			dispatch({ type: 'FETCH_INIT' });
+			fetch(query)
+				.then(response => response.json())
+				.then(({ data }) => {
+					dispatch({
+						type: 'UPDATE_ROWS',
+						payload: {
+							skip: requestedSkip,
+							rows: data,
+							totalCount: MAX_ROWS,
+						},
+					});
+				})
+				.catch(() => dispatch({ type: 'REQUEST_ERROR' }));
+			dispatch({ type: 'UPDATE_QUERY', payload: query });
+        }
+        console.log('loadDataEnd');
+	};
+
+	useEffect(() => loadData());
+
+	const {
+		rows, skip, totalCount, loading,
+    } = state;
+    console.log(rows);
+	return (
+		<Paper>
+            <h1>Virtual Scrolling</h1>
+            <p>
+                <a href="https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/lazy-loading/"
+                    target="_blank" rel="noopener noreferrer">
+                    React Grid - Virtual Scrolling with Remote Data: Lazy Loading
+                </a>
+            </p>
+			<Grid
+				rows={rows}
+				columns={columns}
+				getRowId={getRowId}
+			>
+				<VirtualTableState
+					loading={loading}
+					totalRowCount={totalCount}
+					pageSize={VIRTUAL_PAGE_SIZE}
+					skip={skip}
+					getRows={getRemoteRows}
+				/>
+				<VirtualTable columnExtensions={tableColumnExtensions} />
+				<TableHeaderRow />
+			</Grid>
+		</Paper>
+	);
+};
