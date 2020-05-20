@@ -29,7 +29,14 @@ const Grid1 = (props) => {
 		{ columnName: 'city', width: 250 },
 		{ columnName: 'car', width: 250 },
 	]);
-  
+
+	const columnsSortingExtensions = [
+		{
+			columnName: 'car',
+			sortingEnabled: false,
+		},
+	];
+
 	return (
 		<Paper>
 			<h1>Grid1</h1>
@@ -61,6 +68,7 @@ const Grid1 = (props) => {
 				<SortingState
 					sorting={sorting}
 					onSortingChange={setSorting}
+					columnExtensions={columnsSortingExtensions} // отключаем сортировку
 				/>
 				<PagingState
 					defaultCurrentPage={0}
