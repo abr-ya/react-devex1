@@ -16,6 +16,32 @@ import {
 	PagingPanel,
 	TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
+//import Button from '@material-ui/core/Button';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+
+const SortingIcon = ({ direction }) => (
+	direction === 'asc'
+	  ? <ArrowUpward style={{ fontSize: '18px' }} />
+	  : <ArrowDownward style={{ fontSize: '18px' }} />
+  );
+  
+const SortLabel = ({ onSort, children, direction }) => (
+	<div
+	  onClick={onSort}
+	>
+	  {children}
+	  {(direction && <SortingIcon direction={direction} />)}
+	</div>
+	// <Button
+	// 	size="small"
+	// 	variant="contained"
+	// 	onClick={onSort}
+	// >
+	// 	{children}
+	// 	{(direction && <SortingIcon direction={direction} />)}
+	// </Button>
+);
 
 const Grid1 = (props) => {
 	const {rows, columns} = props;
@@ -31,11 +57,20 @@ const Grid1 = (props) => {
 	]);
 
 	const columnsSortingExtensions = [
+		// {
+		// 	columnName: 'car',
+		// 	sortingEnabled: false,
+		// },
+	];
+
+	const columnsResizeExtensions = [
 		{
 			columnName: 'car',
-			sortingEnabled: false,
+			minWidth: 200,
+			maxWidth: 300,
 		},
 	];
+
 
 	return (
 		<Paper>
@@ -69,6 +104,7 @@ const Grid1 = (props) => {
 					sorting={sorting}
 					onSortingChange={setSorting}
 					columnExtensions={columnsSortingExtensions} // отключаем сортировку
+					// ломается при кастомизации меток
 				/>
 				<PagingState
 					defaultCurrentPage={0}
@@ -78,8 +114,14 @@ const Grid1 = (props) => {
 				<IntegratedPaging />
 				<PagingPanel />
 				<Table />
-				<TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-				<TableHeaderRow showSortingControls />
+				<TableColumnResizing
+					defaultColumnWidths={defaultColumnWidths}
+					columnExtensions={columnsResizeExtensions}
+				/>
+				<TableHeaderRow
+					showSortingControls
+					sortLabelComponent={SortLabel} // слетает отключение сортировки
+				/>
 				<TableFilterRow />
 			</Grid>
 		</Paper>
