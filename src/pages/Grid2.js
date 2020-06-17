@@ -2,11 +2,13 @@ import React, { useState, useReducer, useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
 	VirtualTableState,
+	SelectionState, // sel
 } from '@devexpress/dx-react-grid';
 import {
 	Grid,
 	VirtualTable,
 	TableHeaderRow,
+	TableSelection, // sel
 } from '@devexpress/dx-react-grid-material-ui';
 
 const VIRTUAL_PAGE_SIZE = 100;
@@ -61,6 +63,7 @@ function reducer(state, { type, payload }) {
 
 export default () => {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const [selection, setSelection] = useState([1]);
 	const [columns] = useState([
 		{ name: 'Id', title: 'Id', getCellValue: row => row.Id },
 		{ name: 'ProductCategoryName', title: 'Category', getCellValue: row => row.ProductCategoryName },
@@ -76,6 +79,7 @@ export default () => {
 	]);
 
 	const getRemoteRows = (requestedSkip, take) => {
+		console.log('getRemoteRows (requestedSkip, take)', requestedSkip, take);
 		dispatch({ type: 'START_LOADING', payload: { requestedSkip, take } });
 	};
 
@@ -83,7 +87,7 @@ export default () => {
 		const {
 			requestedSkip, take, lastQuery, loading,
         } = state;
-        console.log(requestedSkip, take, lastQuery);
+        console.log('state', state);
 		const query = buildQueryString(requestedSkip, take);
 		if (query !== lastQuery && !loading) {
 			dispatch({ type: 'FETCH_INIT' });
@@ -102,15 +106,13 @@ export default () => {
 				.catch(() => dispatch({ type: 'REQUEST_ERROR' }));
 			dispatch({ type: 'UPDATE_QUERY', payload: query });
         }
-        console.log('loadDataEnd');
 	};
 
 	useEffect(() => loadData());
 
-	const {
-		rows, skip, totalCount, loading,
-    } = state;
-    console.log(rows);
+	const {rows, skip, totalCount, loading} = state;
+	console.log('rows:', rows);
+	
 	return (
 		<Paper>
             <h1>Virtual Scrolling</h1>
@@ -120,11 +122,26 @@ export default () => {
                     React Grid - Virtual Scrolling with Remote Data: Lazy Loading
                 </a>
             </p>
+			<p>
+                <a href="https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/selection/#select-on-a-row-click"
+                    target="_blank" rel="noopener noreferrer">
+                    React Grid - Selection - Select on a Row Click
+                </a>
+            </p>
 			<Grid
 				rows={rows}
 				columns={columns}
 				getRowId={getRowId}
 			>
+				<SelectionState
+					selection={selection}
+					onSelectionChange={
+						(data) => {
+							setSelection([data[data.length-1]])
+							console.log(data);
+						}
+					}
+				/>
 				<VirtualTableState
 					loading={loading}
 					totalRowCount={totalCount}
@@ -134,6 +151,11 @@ export default () => {
 				/>
 				<VirtualTable columnExtensions={tableColumnExtensions} />
 				<TableHeaderRow />
+				<TableSelection
+					selectByRowClick
+					highlightRow
+					showSelectionColumn={false}
+				/>
 			</Grid>
 		</Paper>
 	);

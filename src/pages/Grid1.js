@@ -56,11 +56,12 @@ const Grid1 = (props) => {
 		{ columnName: 'car', width: 250 },
 	]);
 
+	// при кастомных метках сортировка работает, метка не отключается
 	const columnsSortingExtensions = [
-		// {
-		// 	columnName: 'car',
-		// 	sortingEnabled: false,
-		// },
+		{
+			columnName: 'car',
+			sortingEnabled: false,
+		},
 	];
 
 	const columnsResizeExtensions = [
